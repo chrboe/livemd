@@ -1,6 +1,6 @@
 //
 // livemd.go
-// Copyright (C) 2018 Christoph Böhmwalder <christoph@localhost>
+// Copyright (C) 2018 Christoph Böhmwalder <christoph@boehmwalder.at>
 //
 // Distributed under terms of the GPLv3 license.
 //
