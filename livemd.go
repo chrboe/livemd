@@ -8,6 +8,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/websocket"
 	"gopkg.in/russross/blackfriday.v2"
@@ -21,16 +22,15 @@ import (
 
 var (
 	htmlBuffer []byte
-	target  string
-	sockets []*websocket.Conn
+	target     string
+	sockets    []*websocket.Conn
 )
 
 func updateBuffer() {
 	var mdBuffer []byte
 	var err error
 	if mdBuffer, err = ioutil.ReadFile(target); err != nil {
-		log.Fatal("Error reading from", target, ":", err)
-		os.Exit(-1)
+		log.Fatal("Error reading from ", target, ": ", err)
 	}
 
 	htmlBuffer = blackfriday.Run(mdBuffer)
@@ -56,7 +56,7 @@ func setupWatch() (*fsnotify.Watcher, error) {
 				if event.Op&fsnotify.Write == fsnotify.Write {
 					abs, err := filepath.Abs(event.Name)
 					if err != nil {
-						log.Fatal("Error reading from", target, ":", err)
+						log.Fatal("Error getting absolute path of ", event.Name, ": ", err)
 					}
 
 					if abs == target {
@@ -86,18 +86,30 @@ func registerUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	if len(os.Args)-1 != 1 {
+		fmt.Printf("livemd\n\n")
+		fmt.Printf("Usage:\n")
+		fmt.Printf("\t%s <file>\n", os.Args[0])
+		return
+	}
+
 	var err error
-	target, err = filepath.Abs("test.md")
+	target, err = filepath.Abs(os.Args[1])
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
 	updateBuffer()
 
 	watcher, err := setupWatch()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 	defer watcher.Close()
 
-	log.Print("File Watch setup done")
+	log.Print("Watching \"", os.Args[1], "\" for changes")
 
 	err = watcher.Add(".")
 	if err != nil {
