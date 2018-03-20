@@ -17,8 +17,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"text/template"
 	"regexp"
+	"text/template"
 )
 
 var (
@@ -44,14 +44,18 @@ func guessTitle(htmlBuffer string) string {
 	return "livemd"
 }
 
+func renderMarkdown(markdown []byte) []byte {
+	return blackfriday.Run(markdown, blackfriday.WithNoExtensions())
+}
+
 func updateBuffer() {
-	var mdBuffer []byte
-	var err error
-	if mdBuffer, err = ioutil.ReadFile(target); err != nil {
+	mdBuffer, err := ioutil.ReadFile(target)
+
+	if err != nil {
 		log.Fatal("Error reading from ", target, ": ", err)
 	}
 
-	messageBuf.Html = string(blackfriday.Run(mdBuffer))
+	messageBuf.Html = string(renderMarkdown(mdBuffer))
 	messageBuf.Title = guessTitle(messageBuf.Html)
 
 	for _, c := range sockets {
