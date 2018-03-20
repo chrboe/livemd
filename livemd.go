@@ -18,13 +18,31 @@ import (
 	"os"
 	"path/filepath"
 	"text/template"
+	"regexp"
 )
 
 var (
-	htmlBuffer []byte
+	messageBuf htmlMessage
 	target     string
 	sockets    []*websocket.Conn
+	titleRegex *regexp.Regexp = regexp.MustCompile(`(?s)^\s*<h1>(.*)</h1>.*$`)
 )
+
+type htmlMessage struct {
+	Title string
+	Html  string
+}
+
+func guessTitle(htmlBuffer string) string {
+	// guess the title based on a dumb heuristic: is the first tag a <h1> tag?
+	match := titleRegex.FindStringSubmatch(htmlBuffer)
+
+	if match != nil {
+		return match[1]
+	}
+
+	return "livemd"
+}
 
 func updateBuffer() {
 	var mdBuffer []byte
@@ -33,10 +51,11 @@ func updateBuffer() {
 		log.Fatal("Error reading from ", target, ": ", err)
 	}
 
-	htmlBuffer = blackfriday.Run(mdBuffer)
+	messageBuf.Html = string(blackfriday.Run(mdBuffer))
+	messageBuf.Title = guessTitle(messageBuf.Html)
 
 	for _, c := range sockets {
-		err = c.WriteMessage(websocket.TextMessage, htmlBuffer)
+		err = c.WriteJSON(&messageBuf)
 		if err != nil {
 			log.Println("Error", err)
 		}
@@ -82,7 +101,7 @@ func registerUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sockets = append(sockets, c)
-	c.WriteMessage(websocket.TextMessage, htmlBuffer)
+	c.WriteJSON(messageBuf)
 }
 
 func main() {
@@ -94,6 +113,7 @@ func main() {
 	}
 
 	var err error
+
 	target, err = filepath.Abs(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
@@ -120,10 +140,12 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
+			Title    string
 			Rendered string
 			WsUrl    string
 		}{
-			string(htmlBuffer),
+			messageBuf.Title,
+			string(messageBuf.Html),
 			"ws://" + r.Host + "/update",
 		}
 		tmpl.Execute(w, data)
