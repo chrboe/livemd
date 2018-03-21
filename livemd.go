@@ -19,6 +19,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"text/template"
+	"github.com/rakyll/statik/fs"
+	_ "github.com/chrboe/livemd/statik"
 )
 
 var (
@@ -26,6 +28,7 @@ var (
 	target     string
 	sockets    []*websocket.Conn
 	titleRegex *regexp.Regexp = regexp.MustCompile(`(?s)^\s*<h1>(.*)</h1>.*$`)
+	pwd string
 )
 
 type htmlMessage struct {
@@ -118,6 +121,11 @@ func main() {
 
 	var err error
 
+	statikFS, err := fs.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	target, err = filepath.Abs(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
@@ -140,7 +148,20 @@ func main() {
 		log.Fatal(err)
 	}
 
-	tmpl := template.Must(template.ParseFiles("templates/view.html"))
+	tmplFile, err := statikFS.Open("/view.html")
+	if err != nil {
+		panic(err)
+	}
+
+	tmplBin, err := ioutil.ReadAll(tmplFile)
+	if err != nil {
+		panic(err)
+	}
+
+	tmpl, err := template.New("view").Parse(string(tmplBin))
+	if err != nil {
+		panic(err)
+	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		data := struct {
