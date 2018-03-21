@@ -10,7 +10,7 @@ templates into the binary.
 
 ## Installation
 
-(Assumes the [statik](https://github.com/rakyll/statik) is alredy installed)
+(Assumes the [statik](https://github.com/rakyll/statik) tool is already installed)
 
 ```
 $ go get -u github.com/chrboe/livemd
