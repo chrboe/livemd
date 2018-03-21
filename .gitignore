@@ -13,3 +13,5 @@
 # Vendor directory
 vendor
 
+# statik generated package
+statik/
