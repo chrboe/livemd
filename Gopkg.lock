@@ -14,6 +14,12 @@
   version = "v1.2.0"
 
 [[projects]]
+  name = "github.com/rakyll/statik"
+  packages = ["fs"]
+  revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
+  version = "v0.1.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/shurcooL/sanitized_anchor_name"
   packages = ["."]
@@ -22,7 +28,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["plan9","unix","windows","windows/registry","windows/svc","windows/svc/debug","windows/svc/eventlog","windows/svc/mgr"]
+  packages = ["unix"]
   revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
 
 [[projects]]
@@ -34,6 +40,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4f492a9e5b4609b2b88da869ac0c1ec0c6860c6747dccf17e5620949e1a402da"
+  inputs-digest = "5c6705882b6f01dca8f2452dc64570521ee94eb4dca0e47326993135df844c52"
   solver-name = "gps-cdcl"
   solver-version = 1
