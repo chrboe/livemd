@@ -5,13 +5,17 @@
 This is a small tool that allows you to instantly see changes you make to a
 Markdown document. It is written in [Go](https://www.golang.org) and uses the
 [Blackfriday](https://github.com/russross/blackfriday) library for parsing the
-Markdown.
+Markdown. [statik](https://github.com/rakyll/statik) is used to embed the
+templates into the binary.
 
 ## Installation
+
+(Assumes the [statik](https://github.com/rakyll/statik) is alredy installed)
 
 ```
 $ go get -u github.com/chrboe/livemd
 $ cd $GOPATH/src/github.com/chrboe/livemd
+$ statik -src=templates/
 $ go build
 ```
 
