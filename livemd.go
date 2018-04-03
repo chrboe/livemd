@@ -121,9 +121,11 @@ func main() {
 		fmt.Fprintf(os.Stderr, "\t%s [-b] <file>\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\nOptions:\n")
 		fmt.Fprintf(os.Stderr, "\t-b\tOpen a browser window with the markdown document\n")
+		fmt.Fprintf(os.Stderr, "\t-p\tWhich port to start the webserver on (default: 8081)\n")
 	}
 
 	openBrowser := flag.Bool("b", false, "")
+	port := flag.Int("p", 8081, "")
 
 	flag.Parse()
 
@@ -192,15 +194,15 @@ func main() {
 
 	http.HandleFunc("/update", registerUpdate)
 
-	log.Print("Serving on port 8081")
+	log.Printf("Serving on port %d\n", *port)
 
-	l, err := net.Listen("tcp", "localhost:8081")
+	l, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if *openBrowser {
-		open.Start("http://localhost:8081")
+		open.Start(fmt.Sprintf("http://localhost:%d", *port))
 	}
 
 	log.Fatal(http.Serve(l, nil))
