@@ -21,6 +21,9 @@ import (
 	"text/template"
 	"github.com/rakyll/statik/fs"
 	_ "github.com/chrboe/livemd/statik"
+	"flag"
+	"github.com/skratchdot/open-golang/open"
+	"net"
 )
 
 var (
@@ -112,10 +115,20 @@ func registerUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if len(os.Args)-1 != 1 {
-		fmt.Printf("livemd\n\n")
-		fmt.Printf("Usage:\n")
-		fmt.Printf("\t%s <file>\n", os.Args[0])
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "livemd\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n")
+		fmt.Fprintf(os.Stderr, "\t%s [-b] <file>\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "\nOptions:\n")
+		fmt.Fprintf(os.Stderr, "\t-b\tOpen a browser window with the markdown document\n")
+	}
+
+	openBrowser := flag.Bool("b", false, "")
+
+	flag.Parse()
+
+	if len(flag.Args()) != 1 {
+		flag.Usage()
 		return
 	}
 
@@ -126,7 +139,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	target, err = filepath.Abs(os.Args[1])
+	relTarget := flag.Args()[0]
+	target, err = filepath.Abs(relTarget)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -141,7 +155,7 @@ func main() {
 	}
 	defer watcher.Close()
 
-	log.Print("Watching \"", os.Args[1], "\" for changes")
+	log.Print("Watching \"", relTarget, "\" for changes")
 
 	err = watcher.Add(".")
 	if err != nil {
@@ -179,5 +193,15 @@ func main() {
 	http.HandleFunc("/update", registerUpdate)
 
 	log.Print("Serving on port 8081")
-	log.Fatal(http.ListenAndServe(":8081", nil))
+
+	l, err := net.Listen("tcp", "localhost:8081")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if *openBrowser {
+		open.Start("http://localhost:8081")
+	}
+
+	log.Fatal(http.Serve(l, nil))
 }

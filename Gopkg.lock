@@ -27,8 +27,14 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/skratchdot/open-golang"
+  packages = ["open"]
+  revision = "75fb7ed4208cf72d323d7d02fd1a5964a7a9073c"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = ["plan9","unix","windows","windows/registry","windows/svc","windows/svc/debug","windows/svc/eventlog","windows/svc/mgr"]
   revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
 
 [[projects]]
@@ -40,6 +46,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5c6705882b6f01dca8f2452dc64570521ee94eb4dca0e47326993135df844c52"
+  inputs-digest = "846264c032dfe675e50efb6620d3a5eb2fac2663649ddbd14de875e1f89b910b"
   solver-name = "gps-cdcl"
   solver-version = 1
