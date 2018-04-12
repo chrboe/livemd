@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"text/template"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 var (
@@ -55,7 +56,9 @@ func guessTitle(htmlBuffer string) string {
 }
 
 func renderMarkdown(markdown []byte) []byte {
-	return blackfriday.Run(markdown, blackfriday.WithNoExtensions())
+	unsafe := blackfriday.Run(markdown, blackfriday.WithNoExtensions())
+	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
+	return html
 }
 
 func updateBuffer(target string) {

@@ -14,6 +14,12 @@
   version = "v1.2.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/microcosm-cc/bluemonday"
+  packages = ["."]
+  revision = "995366fdf961d03629cd17361bddd32745718e2c"
+
+[[projects]]
   name = "github.com/rakyll/statik"
   packages = ["fs"]
   revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
@@ -33,8 +39,14 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = ["html","html/atom"]
+  revision = "61147c48b25b599e5b561d2e9c4f3e1ef489ca41"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
-  packages = ["plan9","unix","windows","windows/registry","windows/svc","windows/svc/debug","windows/svc/eventlog","windows/svc/mgr"]
+  packages = ["unix"]
   revision = "7ceb54c8418b8f9cdf0177b511d5cbb06e9fae39"
 
 [[projects]]
@@ -46,6 +58,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "846264c032dfe675e50efb6620d3a5eb2fac2663649ddbd14de875e1f89b910b"
+  inputs-digest = "a68db948d2990b95a9d0ede73ae3f110adc1b581b7ae9e57d2fbac1df89475e3"
   solver-name = "gps-cdcl"
   solver-version = 1
